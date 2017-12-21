@@ -7,7 +7,7 @@
             <div class="col-md-9">
                 <div class="card">
                     <div class="card-header">{{ $user->name }}</div>
-                    <div class="card-body">
+                    <div class="card-body conversations">
                         @if($messages->hasMorePages())
                             <div class="text-center">
                                 <a href="{{ $messages->previousPageUrl() }}" class="btn btn-light">

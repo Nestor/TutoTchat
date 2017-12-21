@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMessage;
 use App\Message;
+use App\Notifications\MessageReceived;
 use App\Repository\MessageRepository;
 use App\User;
 use Carbon\Carbon;
@@ -55,10 +56,7 @@ class ConversationsController extends Controller
     }
 
     public function index () {
-        return $this->view->make('messages.index', [
-            'users' => $this->getUsers(),
-            'unread_count' => $this->getUnreadCount()
-        ]);
+        return $this->view->make('messages.index');
     }
 
     public function show (int $id) {
@@ -80,11 +78,13 @@ class ConversationsController extends Controller
 
     public function store (int $id, StoreMessage $request) {
         $user = $this->user->newQuery()->findOrFail($id);
-        $this->messageRepository->create(
+        $message = $this->messageRepository->create(
             $request->get('content'),
             $this->auth->user()->id,
             $user->id
         );
+        $message->from = $user;
+        $user->notify(new MessageReceived($message));
 
         return $this->redirector->route('messages.show', compact('id'));
     }

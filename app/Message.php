@@ -17,6 +17,11 @@ class Message extends Model
         'created_at', 'seen_at'
     ];
 
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('c');
+    }
+
     public function from() {
         return $this->belongsTo(User::class, 'from_id');
     }

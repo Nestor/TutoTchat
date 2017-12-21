@@ -24,7 +24,8 @@ class StoreMessage extends FormRequest
     public function rules()
     {
         return [
-            'content' => 'required|min:5'
+            'content' => 'required|min:5',
+            'to_id'   => 'exists:users,id'
         ];
     }
 }

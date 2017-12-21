@@ -13,6 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('/conversations', 'Api\ConversationsController@index');
+Route::get('/conversations/{id}', 'Api\ConversationsController@show');
+Route::post('/conversations', 'Api\ConversationsController@store');
