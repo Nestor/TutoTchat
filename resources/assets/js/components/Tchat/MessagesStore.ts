@@ -5,6 +5,18 @@ import Vue from 'vue'
 
 Vue.use(Vuex)
 
+import Echo from "laravel-echo"
+
+let s = new Echo({
+  broadcaster: 'socket.io',
+  host: window.location.hostname + ':6001'
+})
+
+s.private(`App.User.1`)
+  .listen('MessageSent', (e: {}) => {
+    console.log(e);
+  });
+
 export default new Vuex.Store({
   strict: true,
   state: {
