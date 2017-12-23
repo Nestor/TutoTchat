@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Api;
 
+use App\Events\NewMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMessage;
 use App\Notifications\MessageReceived;
@@ -52,7 +53,8 @@ class ConversationsController extends Controller {
             $request->get('to_id')
         );
         $message->from = $request->user();
-        $request->user()->notify(new MessageReceived($message));
+        event(new NewMessage($message));
+        // $request->user()->notify(new MessageReceived($message));
         return $message;
     }
 

@@ -78,9 +78,9 @@ class MessageRepository
      * @param string $message
      * @param int $from
      * @param int $to
-     * @return Model|$this
+     * @return Message|Model
      */
-    public function create(string $message, int $from, int $to): Model
+    public function create(string $message, int $from, int $to): Message
     {
         return $this->message->newQuery()->create([
             'from_id'    => $from,

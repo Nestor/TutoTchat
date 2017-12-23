@@ -27,7 +27,7 @@ if (conversations) {
     store,
     router,
     render (h) {
-      return h('Tchat')
+      return h('Tchat', {attrs: {user: (conversations as Element).getAttribute('data-userid')}})
     }
   })
 }

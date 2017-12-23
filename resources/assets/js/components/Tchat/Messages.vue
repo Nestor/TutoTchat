@@ -29,14 +29,19 @@
     message: string = ''
     errors: {[key:string]: string} = {}
     loading: boolean = false
+    previousLastMessage: IMessage
     $conversation: HTMLElement
 
     get messages (): IMessage[] {
         return this.$store.getters.messagesFor(parseInt(this.$route.params.id, 10))
     }
 
+    get lastMessage (): IMessage {
+      return this.messages[this.messages.length - 1]
+    }
+
     get hasMoreMessages (): IMessage[] {
-      return this.$store.getters.hasMoreMessage(parseInt(this.$route.params.id, 10))
+      return this.$store.getters.hasMoreMessage(this.$route.params.id)
     }
 
     get user (): number {
@@ -47,10 +52,10 @@
       return this.$store.getters.username(this.$route.params.id)
     }
 
-    mounted () {
-      this.loadMessages()
+    async mounted () {
       this.$conversation = this.$el.querySelector('.conversations') as HTMLElement
       this.onScroll = this.onScroll.bind(this)
+      await this.loadMessages()
     }
 
     resetErrors () {
@@ -58,29 +63,36 @@
     }
 
     @Watch('$route.params.id')
-    loadMessages () {
+    async loadMessages () {
       this.loading = true
-      this.$store.dispatch('loadMessagesFor', this.user).then(e => {
-        this.loading = false
-        // this.scrollBot()
-        if (this.hasMoreMessages) {
-          this.$conversation.addEventListener('scroll', this.onScroll)
-        }
-      })
-    }
-
-    onScroll () {
-      if (this.$conversation.scrollTop === 0) {
-        this.$conversation.removeEventListener('scroll', this.onScroll)
-        this.loadMessages()
+      await this.$store.dispatch('loadMessagesFor', this.$route.params.id)
+      this.loading = false
+      if (this.hasMoreMessages) {
+        this.$conversation.addEventListener('scroll', this.onScroll)
       }
     }
 
+    async onScroll () {
+      if (this.$conversation.scrollTop === 0) {
+        this.$conversation.removeEventListener('scroll', this.onScroll)
+        this.loading = true
+        await this.$store.dispatch('loadPreviousMessagesFor', this.$route.params.id)
+        this.loading = false
+        if (this.hasMoreMessages) {
+          this.$conversation.addEventListener('scroll', this.onScroll)
+        }
+      }
+    }
+
+    @Watch('messages')
     scrollBot () {
-      let conversation = this.$el.querySelector('.conversations') as Element
-      this.$nextTick(() => {
-        conversation.scrollTop = conversation.scrollHeight
-      })
+      if (this.previousLastMessage != this.lastMessage) {
+        let conversation = this.$el.querySelector('.conversations') as Element
+        this.$nextTick(() => {
+          conversation.scrollTop = conversation.scrollHeight
+        })
+        this.previousLastMessage = this.lastMessage
+      }
     }
 
     async sendMessage (e: KeyboardEvent) {
@@ -94,7 +106,6 @@
             message: this.message
           })
           this.message = ''
-          this.scrollBot()
         } catch (e) {
           this.errors = e.errors
         }
