@@ -10,7 +10,8 @@
     "experimentalDecorators": true,
     "lib": [
       "es2015",
-      "dom"
+      "dom",
+      "ES2017.object"
     ]
   },
   "include": [

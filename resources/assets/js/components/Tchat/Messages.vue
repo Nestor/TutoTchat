@@ -52,10 +52,22 @@
       return this.$store.getters.username(this.$route.params.id)
     }
 
-    async mounted () {
+    mounted () {
       this.$conversation = this.$el.querySelector('.conversations') as HTMLElement
       this.onScroll = this.onScroll.bind(this)
-      await this.loadMessages()
+      this.onVisible = this.onVisible.bind(this)
+      this.loadMessages(this.$route.params.id)
+      document.addEventListener('visibilitychange', this.onVisible)
+    }
+
+    destroyed () {
+      document.removeEventListener('visibilitychange', this.onVisible)
+    }
+
+    onVisible () {
+      if (document.hidden === false) {
+        this.loadMessages(this.$route.params.id)
+      }
     }
 
     resetErrors () {
@@ -63,13 +75,15 @@
     }
 
     @Watch('$route.params.id')
-    async loadMessages () {
+    async loadMessages (conversationId: string) {
       this.loading = true
-      await this.$store.dispatch('loadMessagesFor', this.$route.params.id)
+      console.log('dispatch')
+      await this.$store.dispatch('loadMessagesFor', conversationId)
       this.loading = false
       if (this.hasMoreMessages) {
         this.$conversation.addEventListener('scroll', this.onScroll)
       }
+      await this.$store.dispatch('openConversation', parseInt(conversationId, 10))
     }
 
     async onScroll () {
@@ -92,13 +106,6 @@
           conversation.scrollTop = conversation.scrollHeight
         })
         this.previousLastMessage = this.lastMessage
-      }
-    }
-
-    @Watch('lastMessage')
-    markAsRead (message: IMessage) {
-      if (message.from_id === this.user && message.seen_at === null) {
-        this.$store.dispatch('markAsRead', message)
       }
     }
 

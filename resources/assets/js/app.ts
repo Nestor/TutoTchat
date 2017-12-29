@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Tchat from './components/Tchat.vue'
 import Messages from './components/Tchat/Messages.vue'
 import VueRouter from 'vue-router'
-import store from './components/Tchat/MessagesStore'
+import store from './components/Tchat/Store/Store'
 
 Vue.use(VueRouter)
 

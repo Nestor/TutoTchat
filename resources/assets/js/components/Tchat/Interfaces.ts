@@ -16,6 +16,7 @@ export interface IConversation {
   name: string
   unread: number
   count: number
+  loaded: boolean
   messages: IMessage[]
 }
 
