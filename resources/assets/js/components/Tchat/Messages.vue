@@ -95,6 +95,13 @@
       }
     }
 
+    @Watch('lastMessage')
+    markAsRead (message: IMessage) {
+      if (message.from_id === this.user && message.seen_at === null) {
+        this.$store.dispatch('markAsRead', message)
+      }
+    }
+
     async sendMessage (e: KeyboardEvent) {
       this.errors = {}
       if (e.shiftKey === false) {

@@ -22,7 +22,7 @@ export class Request {
     }
   }
 
-  public static async post (url: string, params: object) {
+  public static async post (url: string, params: object = {}) {
     let csrf = (document.querySelector('meta[name=csrf-token]') as HTMLElement).getAttribute('content')
     let options = {...this.options,
       method: 'POST',

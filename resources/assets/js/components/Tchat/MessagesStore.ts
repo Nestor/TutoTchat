@@ -1,10 +1,16 @@
 import {Request} from '../../libs/Request'
 import { IMessage, IConversation, IConversationsResponse, IConversationResponse } from './Interfaces'
-import Vuex from 'vuex'
+import Vuex, { ActionContext } from 'vuex'
 import Vue from 'vue'
 import Echo from "laravel-echo"
 
 Vue.use(Vuex)
+
+type TchatState = {
+  conversations: {[key: string]: IConversation}
+}
+
+type TchatContext = ActionContext<TchatState, {}>
 
 export default new Vuex.Store({
   strict: true,
@@ -44,6 +50,16 @@ export default new Vuex.Store({
         }
       })
     },
+    readMessage (state, {message}: {message: IMessage}) {
+      let conversation = state.conversations[message.from_id]
+      if (conversation && message) {
+        conversation.unread--
+        let msg: IMessage|undefined = conversation.messages.find(m => m.id === (message as IMessage).id)
+        if (msg) {
+          msg.seen_at = (new Date()).toISOString()
+        }
+      }
+    }
   },
   getters: {
     messagesFor (state) {
@@ -113,6 +129,11 @@ export default new Vuex.Store({
           }
           context.commit('incrementUnread', e.message.from_id)
         })
+    },
+    async markAsRead (context, message: IMessage) {
+      let response = await Request.post('/api/conversations/' + message.id + '/seen')
+      context.commit('readMessage', {message: message})
+      return response
     }
   }
 })
