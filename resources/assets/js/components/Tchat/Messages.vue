@@ -90,8 +90,12 @@
       if (this.$conversation.scrollTop === 0) {
         this.$conversation.removeEventListener('scroll', this.onScroll)
         this.loading = true
+        let previousHeight: number = this.$conversation.scrollHeight
         await this.$store.dispatch('loadPreviousMessagesFor', this.$route.params.id)
         this.loading = false
+        this.$nextTick(() => {
+          this.$conversation.scrollTop = this.$conversation.scrollHeight - previousHeight
+        })
         if (this.hasMoreMessages) {
           this.$conversation.addEventListener('scroll', this.onScroll)
         }

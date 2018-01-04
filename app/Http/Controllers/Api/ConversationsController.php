@@ -37,9 +37,16 @@ class ConversationsController extends Controller {
         $messages = $messagesQuery->get();
         $this->messageRepository->markAsSeen($messages, $request->user()->id);
         return [
-            'count'    => $messagesQuery->count(),
+            'count'    => $this->messageRepository->getMessagesFor($userId, $request->user()->id)->count(),
             'messages' => array_reverse($messages->toArray())
         ];
+    }
+
+    public function seen (Message $message) {
+        $update = $message->update([
+            'seen_at' => Carbon::now()
+        ], ['validates']);
+        return ['success' => $update];
     }
 
     public function store (StoreMessage $request) {
@@ -52,14 +59,6 @@ class ConversationsController extends Controller {
         event(new NewMessage($message));
         // $request->user()->notify(new MessageReceived($message));
         return $message;
-    }
-
-    public function seen (int $messageId, Message $message) {
-        $message = $message->newQuery()->findOrFail($messageId);
-        $update = $message->update([
-            'seen_at' => Carbon::now()
-        ], ['validates']);
-        return ['success' => $update];
     }
 
 }
