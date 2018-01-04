@@ -1,6 +1,7 @@
 export interface IMessage {
   id: number
   from_id: number
+  to_id: number
   content: string
   created_at: string
   seen_at: null|string
@@ -15,6 +16,7 @@ export interface IConversation {
   name: string
   unread: number
   count: number
+  loaded: boolean
   messages: IMessage[]
 }
 

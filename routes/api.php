@@ -14,5 +14,6 @@ use Illuminate\Http\Request;
 */
 
 Route::get('/conversations', 'Api\ConversationsController@index');
+Route::post('/conversations/{message}/seen', 'Api\ConversationsController@seen')->middleware('can:read,message');
 Route::get('/conversations/{id}', 'Api\ConversationsController@show');
 Route::post('/conversations', 'Api\ConversationsController@store');

@@ -78,9 +78,9 @@ class MessageRepository
      * @param string $message
      * @param int $from
      * @param int $to
-     * @return Model|$this
+     * @return Message|Model
      */
-    public function create(string $message, int $from, int $to): Model
+    public function create(string $message, int $from, int $to): Message
     {
         return $this->message->newQuery()->create([
             'from_id'    => $from,
@@ -92,17 +92,28 @@ class MessageRepository
 
     /**
      * Marque une conversation comme vue
-     * @param int $from
-     * @param int $to
-     * @return int
+     * @param $messages
+     * @param int $userId
+     * @return void
      */
-    public function markAsSeen(int $from, int $to)
+    public function markAsSeen($messages, int $userId)
     {
-        return $this->message->newQuery()
-            ->whereRaw("from_id = $from AND to_id = $to AND seen_at IS NULL")
-            ->update([
-                'seen_at' => Carbon::now()
-            ]);
+        $updated = false;
+        foreach($messages as $message) {
+            if ($message->to_id === $userId && $message->seen_at === null) {
+                $from = $message->from_id;
+                $to = $message->to_id;
+                if ($updated === false) {
+                    $this->message->newQuery()
+                        ->whereRaw("from_id = $from AND to_id = $to AND seen_at IS NULL")
+                        ->update([
+                            'seen_at' => Carbon::now()
+                        ]);
+                    $updated = true;
+                }
+                $message->seen_at = Carbon::now();
+            }
+        }
     }
 
 }

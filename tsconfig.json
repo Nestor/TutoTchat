@@ -6,10 +6,12 @@
     "module": "es2015",
     "moduleResolution": "node",
     "target": "es5",
+    "allowJs": true,
     "experimentalDecorators": true,
     "lib": [
       "es2015",
-      "dom"
+      "dom",
+      "ES2017.object"
     ]
   },
   "include": [

@@ -39,3 +39,4 @@ mix.js('resources/assets/js/app.ts', 'public/js')
       })
     ]
   })
+  .sourceMaps()

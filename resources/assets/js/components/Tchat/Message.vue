@@ -22,8 +22,8 @@
   @Component
   export default class Message extends Vue {
 
-    @Prop() message: IMessage
-    @Prop() author: number
+    @Prop({type: Object}) message: IMessage
+    @Prop({type: Number}) author: number
     timer: number = 0
 
     mounted () {

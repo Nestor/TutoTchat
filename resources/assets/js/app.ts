@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Tchat from './components/Tchat.vue'
 import Messages from './components/Tchat/Messages.vue'
 import VueRouter from 'vue-router'
-import store from './components/Tchat/MessagesStore'
+import store from './components/Tchat/Store/Store'
 
 Vue.use(VueRouter)
 
@@ -27,7 +27,7 @@ if (conversations) {
     store,
     router,
     render (h) {
-      return h('Tchat')
+      return h('Tchat', {attrs: {user: (conversations as Element).getAttribute('data-userid')}})
     }
   })
 }

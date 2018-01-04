@@ -8,14 +8,17 @@
 </template>
 
 <script lang="ts">
+  import {Prop, Component, Vue} from 'vue-property-decorator'
   import Conversations from './Tchat/Conversations.vue'
 
-  export default {
-    data () {
-      return {
-        conversation: 2
-      }
-    },
-    components: { Conversations },
+  @Component({
+    components: { Conversations }
+  })
+  export default class Tchat extends Vue {
+    @Prop() user: number
+
+    mounted () {
+      this.$store.dispatch('listenToMessage', this.user)
+    }
   }
 </script>
